@@ -8,8 +8,8 @@ const options = {
 };
 
 const parser = new XMLParser(options);
-// C:\Users\jscheit\source\Workspaces\ITDev\Salesforce\Orgs\DEV\force-app\main\default\objects - FOR OBJECTS IF NEEDED
 const PERMISSION_SET_DIR = 'C:/Users/jscheit/source/Workspaces/ITDev/Salesforce/Orgs/DEV/force-app/main/default/permissionsets';
+const OBJECT_SET_DIR = 'C:/Users/jscheit/source/Workspaces/ITDev/Salesforce/Orgs/DEV/force-app/main/default/objects';
 
 function loadPermissionSets() {
     const files = fs.readdirSync(PERMISSION_SET_DIR).filter(f => f.endsWith('.permissionset-meta.xml'));
@@ -29,4 +29,49 @@ function loadPermissionSets() {
     });
 }
 
-module.exports = { loadPermissionSets };
+function loadObjects() {
+    const folders = fs.readdirSync(OBJECT_SET_DIR, { withFileTypes: true })
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => dirent.name);
+  
+    return folders;
+  }
+
+function loadPermissionSetByName(name) {
+    const filename = `${name}.permissionset-meta.xml`;
+    const filePath = path.join(PERMISSION_SET_DIR, filename);
+  
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`Permission set "${name}" not found.`);
+    }
+  
+    const xml = fs.readFileSync(filePath, 'utf-8');
+    const json = parser.parse(xml);
+  
+    const fieldPermissions = json.PermissionSet?.fieldPermissions || [];
+  
+    return {
+      name,
+      fields: Array.isArray(fieldPermissions) ? fieldPermissions : [fieldPermissions],
+    };
+}
+
+function loadObjectByName(name) {
+    const objectFolder = path.join(OBJECT_SET_DIR, name);
+    const fieldsFolder = path.join(objectFolder, 'fields');
+  
+    if (!fs.existsSync(objectFolder)) {
+      throw new Error(`Object folder "${name}" not found`);
+    }
+  
+    if (!fs.existsSync(fieldsFolder)) {
+      return [];
+    }
+  
+    const fieldFiles = fs.readdirSync(fieldsFolder)
+      .filter(f => f.endsWith('.field-meta.xml'));
+  
+    return fieldFiles;
+  }
+
+module.exports = { loadPermissionSets, loadPermissionSetByName, loadObjects, loadObjectByName };
