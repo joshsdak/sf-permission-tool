@@ -1,0 +1,41 @@
+# === Node.js (backend) ===
+backend/node_modules/
+backend/.env
+backend/.DS_Store
+backend/logs/
+backend/*.log
+
+# === React (frontend with Vite) ===
+frontend/node_modules/
+frontend/.env
+frontend/.DS_Store
+frontend/dist/
+frontend/.vite/
+
+# === System Files ===
+.DS_Store
+Thumbs.db
+
+# === Editor settings ===
+.vscode/
+.idea/
+
+# === OS files ===
+*.swp
+*.swo
+
+# === Vite dev cache ===
+frontend/.cache/
+
+# === Salesforce SFDX ===
+*.log
+*.local
+.sfdx/
+.env
+coverage/
+test-results/
+npm-debug.log*
+
+# === Optional Git tracking exclusions ===
+package-lock.json
+yarn.lock
