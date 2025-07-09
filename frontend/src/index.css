@@ -18,3 +18,11 @@
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
   cursor: col-resize;
 }
+
+.table-header {
+  @apply px-4 py-2 text-left;
+}
+
+.table-cell {
+  @apply px-4 py-2 align-top;
+}

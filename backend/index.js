@@ -9,8 +9,9 @@ app.use(express.json());
 
 app.use('/api/permissionSets', permissionSetRoutes);
 app.use('/api/permissionSets/:name', permissionSetRoutes);
-app.use('/api/objects', obejectRoutes)
-app.use('/api/objects/:name', obejectRoutes)
+app.use('/api/permissionSets', permissionSetRoutes);
+app.use('/api/objects', obejectRoutes);
+app.use('/api/objects/:name', obejectRoutes);
 
 app.listen(3001, () => {
   console.log('Backend server running at http://localhost:3001');
