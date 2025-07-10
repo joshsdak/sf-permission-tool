@@ -35,7 +35,6 @@ function App() {
         console.error("Failed to fetch Object:", err);
         alert("Failed to fetch Object set. Check console for details.");
       })
-      console.log(matrix)
   }
 
   const handlePermissionClick = (name) => {
@@ -51,7 +50,6 @@ function App() {
         console.error("Failed to fetch permission set:", err);
         alert("Failed to fetch permission set. Check console for details.");
       });
-      console.log(matrix)
   };
 
   const handlePermissionReadCheckbox = (idx) => {
@@ -69,8 +67,6 @@ function App() {
       }
   
       newFields[idx] = field;
-
-      console.log(curPermSet)
 
       axios.post('/api/permissionSets', {
         name: curPermSet,
@@ -98,13 +94,128 @@ function App() {
       } else {
         field.editable = newEdit;
       }
+
+      axios.post('/api/permissionSets', {
+        name: curPermSet,
+        field: field.field,
+        readable: field.readable,
+        editable: field.editable,
+      }).catch(err => {
+        console.error('Failed to update permission:', err);
+      });
   
       newFields[idx] = field;
       return { ...prev, fields: newFields };
     });
   };
+
+  const handleObjectPermissionReadCheckbox = (fieldIdx, permIdx) => {
+    const fieldName = matrix[fieldIdx];
+    const permissionSetName = permissionNames[permIdx].name;
+    const fieldId = `${curObject}.${fieldName.replace('.field-meta.xml', '')}`;
+
+    setPermissionNames(prev => {
+      const newPerms = [...prev];
+      const fields = [...newPerms[permIdx].fields];
+      const index = fields.findIndex(f => f.field === fieldId);
   
+      if (index !== -1) {
+        const updatedField = { ...fields[index] };
+        const newRead = !updatedField.readable;
   
+        if (updatedField.readable && updatedField.editable && !newRead) {
+          updatedField.readable = false;
+          updatedField.editable = false;
+        } else {
+          updatedField.readable = newRead;
+        }
+        
+        fields[index] = updatedField;
+
+        axios.post('/api/permissionSets', {
+          name: permissionSetName,
+          field: fieldId,
+          readable: updatedField.readable,
+          editable: updatedField.editable,
+        }).catch(err => console.error('Failed to update permission:', err));
+      }
+  
+      const updatedPermSet = { ...newPerms[permIdx], fields };
+      newPerms[permIdx] = updatedPermSet;
+      return [...newPerms];
+    });
+  };
+  
+  const handleObjectPermissionEditCheckbox = (fieldIdx, permIdx) => {
+    const fieldName = matrix[fieldIdx];
+    const permissionSetName = permissionNames[permIdx].name;
+    const fieldId = `${curObject}.${fieldName.replace('.field-meta.xml', '')}`;
+  
+    setPermissionNames(prev => {
+      const newPerms = [...prev];
+      const fields = [...newPerms[permIdx].fields];
+      const index = fields.findIndex(f => f.field === fieldId);
+  
+      if (index !== -1) {
+        const updatedField = { ...fields[index] };
+        const newEdit = !updatedField.editable;
+  
+        if (!updatedField.readable && !updatedField.editable && newEdit) {
+          updatedField.readable = true;
+          updatedField.editable = true;
+        } else {
+          updatedField.editable = newEdit;
+        }
+  
+        fields[index] = updatedField;
+  
+        axios.post('/api/permissionSets', {
+          name: permissionSetName,
+          field: fieldId,
+          readable: updatedField.readable,
+          editable: updatedField.editable,
+        }).catch(err => console.error('Failed to update permission:', err));
+      }
+  
+      const updatedPermSet = { ...newPerms[permIdx], fields };
+      newPerms[permIdx] = updatedPermSet;
+      return [...newPerms];
+    });
+  };
+
+  const handleAddObjectPermission = (fieldIdx, permIdx) => {
+    const fieldName = matrix[fieldIdx];
+    const permissionSetName = permissionNames[permIdx].name;
+    const fieldId = `${curObject}.${fieldName.replace('.field-meta.xml', '')}`;
+  
+    setPermissionNames(prev => {
+      const newPerms = [...prev];
+      const fields = [...newPerms[permIdx].fields];
+      const index = fields.findIndex(f => f.field === fieldId);
+  
+      if (index !== -1) {
+        return prev;
+      }
+  
+      const newField = {
+        field: fieldId,
+        readable: false,
+        editable: false,
+      };
+  
+      fields.push(newField);
+      
+      axios.post('/api/permissionSets/addFieldPermission', {
+        permission: permissionSetName,
+        object: curObject,
+        field: fieldName.replace('.field-meta.xml', ''),
+      }).catch(err => console.error('Failed to add new field permission:', err));
+  
+      const updatedPermSet = { ...newPerms[permIdx], fields };
+      newPerms[permIdx] = updatedPermSet;
+      return [...newPerms];
+    });
+  };
 
   return (
     <div className="h-screen w-screen overflow-hidden">
@@ -193,7 +304,6 @@ function App() {
             </table>
           )}
           
-          {/* Add OnChangeHandler for the Checkboxes */}
           {objectMatrix && (
             <table id="ObjectMatrix" className="table-auto border-collapse overflow-auto">
                 <thead>                  
@@ -221,15 +331,22 @@ function App() {
                             <td className="table-cell" key={pIdx}>
                               {permField ? (
                                 <div className="flex justify-center items-center h-full">
-                                  <input id="readCheckbox" type="checkbox" checked={permField.readable} readOnly />
+                                  <input onChange={() => handleObjectPermissionReadCheckbox(idx, pIdx)} id="readCheckbox" type="checkbox" checked={permField.readable} />
                                   <label className="px-2" htmlFor="readCheckbox">Read</label>
-                                  <input id="editCheckbox" type="checkbox" checked={permField.editable} readOnly />
+                                  <input onChange={() => handleObjectPermissionEditCheckbox(idx, pIdx)} id="editCheckbox" type="checkbox" checked={permField.editable} />
                                   <label className="px-2" htmlFor="editCheckbox">Edit</label>
                                 </div>
                               ) : (
-                                <div className="flex justify-center items-center h-full">
-                                  <button className="hover:bg-green-500 px-2 border border-black rounded-full whitespace-nowrap">Add Field to Permission Set</button>
-                                </div>
+                                <button
+                                  type="button"
+                                  className="hover:bg-green-500 px-2 border border-black rounded-full whitespace-nowrap"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleAddObjectPermission(idx, pIdx);
+                                  }}
+                                >
+                                  Add Field to Permission Set
+                                </button>
                               )}
                             </td>
                           )
@@ -239,13 +356,6 @@ function App() {
                   </tbody>
             </table>
           )}
-
-          {/* <div>
-            <button id="Submit" className="hover:bg-green-500 px-2 border-white rounded-full whitespace-nowrap">
-              Apply Changes
-            </button>
-          </div> */}
-
         </div>
 
       </Split>

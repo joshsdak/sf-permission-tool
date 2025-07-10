@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { loadPermissionSets, loadPermissionSetByName, loadObjects } = require('../parser/readPermissions');
-const { writePermissionSet } = require('../parser/writePermissions')
+const { writePermissionSet, writeNewFieldPermission } = require('../parser/writePermissions')
 
 router.get('/', (req, res) => {
     const data = loadPermissionSets();
@@ -31,7 +31,23 @@ router.post('/', (req, res) => {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
-  });
+});
+
+router.post('/addFieldPermission', (req, res) => {
+  const { permission, object, field } = req.body
+
+  try {
+    const success = writeNewFieldPermission(permission, object, field);
+    if(success) {
+      res.json({ message: 'Field permission added successfully.' });
+    } else {
+      res.status(404).json({ error: 'Field Permission was not added successfully. '});
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message  });
+  }
+});
+
   
 
 module.exports = router;
