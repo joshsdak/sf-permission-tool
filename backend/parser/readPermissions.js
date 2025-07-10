@@ -1,3 +1,5 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const fs = require('fs');
 const path = require('path');
 const {XMLParser} = require('fast-XML-parser');
@@ -8,10 +10,11 @@ const options = {
 };
 
 const parser = new XMLParser(options);
-const PERMISSION_SET_DIR = 'C:/Users/jscheit/source/Workspaces/ITDev/Salesforce/Orgs/DEV/force-app/main/default/permissionsets';
-const OBJECT_SET_DIR = 'C:/Users/jscheit/source/Workspaces/ITDev/Salesforce/Orgs/DEV/force-app/main/default/objects';
+const PERMISSION_SET_DIR = process.env.PERMISSION_SET_DIR;
+const OBJECT_SET_DIR = process.env.OBJECT_SET_DIR;
 
 function loadPermissionSets() {
+    console.log(dotenv.PERMISSION_SET_DIR);
     const files = fs.readdirSync(PERMISSION_SET_DIR).filter(f => f.endsWith('.permissionset-meta.xml'));
 
     return files.map(file => {

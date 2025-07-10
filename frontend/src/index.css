@@ -9,7 +9,7 @@
 }
 
 .gutter {
-  background-color: #eee;
+  background-color: #000000;
   background-repeat: no-repeat;
   background-position: 50%;
 }
@@ -25,4 +25,12 @@
 
 .table-cell {
   @apply px-4 py-2 align-top;
+}
+
+.background-color {
+  background-color: #808080;
+}
+
+.text-color {
+  color: white;
 }

@@ -204,7 +204,7 @@ function App() {
       };
   
       fields.push(newField);
-      
+
       axios.post('/api/permissionSets/addFieldPermission', {
         permission: permissionSetName,
         object: curObject,
@@ -218,7 +218,8 @@ function App() {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden">
+    <div className="h-screen w-screen overflow-hidden background-color border-black text-color">
+    
       <Split className="flex split h-full" minSize={200}>
         
         <div id="Sidebar" className="flex flex-col h-full">
@@ -260,18 +261,18 @@ function App() {
           </div>
         </div>
 
-        <div id="View" className="h-full overflow-auto">
+        <div id="View" className="h-full overflow-auto text-black">
 
           {permissionMatrix && (
             <table id="PermissionMatrix" className="table-auto border-collapse overflow-auto">
                 <thead>
                   <tr className="odd:bg-gray-100 even:bg-gray-200">
-                    <th className="table-header">{ curPermSet }</th>
+                    <th className="table-header sticky top-0 z-10 bg-gray-100" colSpan={3}>{ curPermSet }</th>
                   </tr>
                   <tr className="odd:bg-gray-100 even:bg-gray-200">
-                    <th className="table-header">Field</th>
-                    <th className="table-header">Read</th>
-                    <th className="table-header">Edit</th>
+                    <th className="table-header sticky top-10 z-10 bg-gray-100">Field</th>
+                    <th className="table-header sticky top-10 z-10 bg-gray-100">Read</th>
+                    <th className="table-header sticky top-10 z-10 bg-gray-100">Edit</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -312,9 +313,9 @@ function App() {
                     <th className="table-header">Permission Sets</th>
                   </tr>
                   <tr className="odd:bg-gray-100 even:bg-gray-200">
-                    <th className="table-header">Field</th>
+                    <th className="table-header sticky top-0 z-10 bg-gray-100">Field</th>
                     {permissionNames.map((set, index) => (
-                      <th className="table-header" key={index}>
+                      <th className="table-header sticky top-0 z-10 bg-gray-100" key={index}>
                         {set.name}  
                     </th>
                     ))}
@@ -323,7 +324,7 @@ function App() {
                   <tbody>
                     {matrix?.map((field, idx) => (
                       <tr className="odd:bg-gray-100 even:bg-gray-200" key={idx}>
-                        <td className="table-cell">{field.replace('.field-meta.xml', '')}</td>
+                        <td className="table-cell sticky left-0 bg-gray-100 z-20">{field.replace('.field-meta.xml', '')}</td>
                         {permissionNames.map((perm, pIdx) => {
                           const searchFor = curObject + '.' + field.replace('.field-meta.xml', '');
                           const permField = perm.fields?.find(f => f.field === searchFor);

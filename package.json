@@ -1,0 +1,24 @@
+{
+  "name": "sf-permission-tool",
+  "version": "1.0.0",
+  "description": "UI Tool to edit salesforce permission sets easier",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "start": "concurrently \"cd backend && node index.js\" \"cd frontend && npm run dev\""
+  },  
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joshsdak/sf-permission-tool.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joshsdak/sf-permission-tool/issues"
+  },
+  "homepage": "https://github.com/joshsdak/sf-permission-tool#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
