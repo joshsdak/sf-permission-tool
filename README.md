@@ -12,3 +12,9 @@ How to Use
 7. run npm start or npm run start and select to link in the terminal to open in browser
 8. Once in the browser, select the desired permission/object and edit as needed
 9. View and commit changes in VS after making changes in the browser
+
+How is the sorting done in this tool? I followed the Salesforce ASCII Binary based sorting, so the following have the values:
+* . (dot)  = 46  
+* _ (underscore) = 95  
+* A-Z = 65–90  
+* a-z = 97–122
