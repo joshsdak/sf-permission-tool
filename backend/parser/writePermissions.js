@@ -78,8 +78,19 @@ function writeNewFieldPermission(permission, object, field) {
   }
 
   fieldPermissions.push(newFieldPermission);
-  fieldPermissions.sort((a, b) => a.field.localeCompare(b.field));
-  json.PermissionSet.fieldPermissions = fieldPermissions;
+  fieldPermissions.sort((a, b) => {
+    const fa = a.field;
+    const fb = b.field;
+    return fa < fb ? -1 : fa > fb ? 1 : 0;
+  });
+
+  // if (fa < fb) {
+  //   return -1;
+  // } else if (fa > fb) {
+  //   return 1;
+  // } else {
+  //   return 0;
+  // }
 
   
   const updatedXml = builder.build(json);
