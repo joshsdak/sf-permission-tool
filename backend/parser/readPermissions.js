@@ -14,7 +14,6 @@ const PERMISSION_SET_DIR = process.env.PERMISSION_SET_DIR;
 const OBJECT_SET_DIR = process.env.OBJECT_SET_DIR;
 
 function loadPermissionSets() {
-    console.log(dotenv.PERMISSION_SET_DIR);
     const files = fs.readdirSync(PERMISSION_SET_DIR).filter(f => f.endsWith('.permissionset-meta.xml'));
 
     return files.map(file => {

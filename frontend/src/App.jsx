@@ -11,6 +11,8 @@ function App() {
   const [matrix, setMatrix] = useState(null);
   const [permissionMatrix, setPermissionMatrix] = useState(false);
   const [objectMatrix, setObjectMatrix] = useState(false);
+  const [addedIndices, setAddedIndices] = useState(new Set());
+
 
   useEffect(() => {
     axios.get('/api/permissionSets')
@@ -217,12 +219,21 @@ function App() {
     });
   };
 
+  const handleAddToProfiles = (fieldIdx) => {
+    const fieldName = matrix[fieldIdx]; // Get the field from matrix
+
+    axios.post('/api/profiles/addFieldPermission', {
+      field: fieldName,
+      object: curObject
+    }).catch(err => console.error('Failed to add field to Profiles', err));
+  }
+
   return (
     <div className="h-screen w-screen overflow-hidden background-color border-black text-color">
     
-      <Split className="flex split h-full" minSize={200}>
+      <Split className="flex flex-col split h-full" minSize={200}>
         
-        <div id="Sidebar" className="flex flex-col h-full">
+        <div id="Sidebar" className="flex flex-col min-h-0">
           <div id="ObjectSelection" className="p-4">
             <h1 className="text-xl mb-2">Objects</h1>
             <div className="overflow-y-auto h-64 pr-2">
@@ -241,7 +252,7 @@ function App() {
               )}
             </div>
           </div>
-          <div id="PermissionSelection" className="p-4 flex flex-col h-full">
+          <div id="PermissionSelection" className="p-4 flex flex-col min-h-0">
             <h1 className="text-xl mb-2">Permission Sets</h1>
             <div className="overflow-y-auto h-128 pr-2">
               {permissionNames ? (
@@ -352,6 +363,23 @@ function App() {
                             </td>
                           )
                         })}
+                        <td className="table-cell">
+                          {addedIndices.has(idx) ? (
+                            <span className="text-green-600 font-semibold">Done!</span>
+                          ) : (
+                            <button 
+                              type="button" 
+                              className="text-red-400 hover:bg-green-500 px-2 border border-black rounded-full whitespace-nowrap"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleAddToProfiles(idx);
+                                setAddedIndices(prev => new Set(prev).add(idx));
+                              }}
+                            >
+                              ADD TO PROFILES
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
