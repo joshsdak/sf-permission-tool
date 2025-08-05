@@ -48,55 +48,55 @@ function writePermissionSet(permission, field, read, edit) {
 }
 
 function writeNewFieldPermission(permission, object, field) {
-  const fileName = `${permission}.permissionset-meta.xml`;
-  const filePath = path.join(PERMISSION_SET_DIR, fileName);
-  const builder = new XMLBuilder(options);
+    const fileName = `${permission}.permissionset-meta.xml`;
+    const filePath = path.join(PERMISSION_SET_DIR, fileName);
+    const builder = new XMLBuilder(options);
 
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`Permission set "${permission}" not found at ${filePath}`);
-  }
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`Permission set "${permission}" not found at ${filePath}`);
+    }
   
-  const xml = fs.readFileSync(filePath, 'utf-8');
-  const json = parser.parse(xml);
+    const xml = fs.readFileSync(filePath, 'utf-8');
+    const json = parser.parse(xml);
 
-  if (!json.PermissionSet.fieldPermissions) {
-    json.PermissionSet.fieldPermissions = [];
-  } else if (!Array.isArray(json.PermissionSet.fieldPermissions)) {
-    json.PermissionSet.fieldPermissions = [json.PermissionSet.fieldPermissions];
-  }
+    if (!json.PermissionSet.fieldPermissions) {
+      json.PermissionSet.fieldPermissions = [];
+    } else if (!Array.isArray(json.PermissionSet.fieldPermissions)) {
+      json.PermissionSet.fieldPermissions = [json.PermissionSet.fieldPermissions];
+    }
 
-  const fieldPermissions = json.PermissionSet.fieldPermissions;
-  const newFieldPermission = {
-    editable: false,
-    field: `${object}.${field}`,
-    readable: false,
-  };
+    const fieldPermissions = json.PermissionSet.fieldPermissions;
+    const newFieldPermission = {
+      editable: false,
+      field: `${object}.${field}`,
+      readable: false,
+    };
 
-  const exists = fieldPermissions.some(fp => fp.field === newFieldPermission.field);
-  if (exists) {
-    throw new Error(`Field permission for "${newFieldPermission.field}" already exists in "${permission}"`);
-  }
+    const exists = fieldPermissions.some(fp => fp.field === newFieldPermission.field);
+    if (exists) {
+      throw new Error(`Field permission for "${newFieldPermission.field}" already exists in "${permission}"`);
+    }
 
-  fieldPermissions.push(newFieldPermission);
-  fieldPermissions.sort((a, b) => {
-    const fa = a.field;
-    const fb = b.field;
-    return fa < fb ? -1 : fa > fb ? 1 : 0;
-  });
+    fieldPermissions.push(newFieldPermission);
+    fieldPermissions.sort((a, b) => {
+      const fa = a.field;
+      const fb = b.field;
+      return fa < fb ? -1 : fa > fb ? 1 : 0;
+    });
 
-  // if (fa < fb) {
-  //   return -1;
-  // } else if (fa > fb) {
-  //   return 1;
-  // } else {
-  //   return 0;
-  // }
+    // if (fa < fb) {
+    //   return -1;
+    // } else if (fa > fb) {
+    //   return 1;
+    // } else {
+    //   return 0;
+    // }
 
-  
-  const updatedXml = builder.build(json);
-  fs.writeFileSync(filePath, updatedXml, 'utf-8');
+    
+    const updatedXml = builder.build(json);
+    fs.writeFileSync(filePath, updatedXml, 'utf-8');
 
-  return true;
+    return true;
 }
 
 module.exports = { writePermissionSet, writeNewFieldPermission }
