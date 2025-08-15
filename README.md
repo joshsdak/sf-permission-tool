@@ -5,7 +5,7 @@ How to Use
 1. Download or Clone this Repository and open in VS Code
 2. cd into frontend and run npm install
 3. cd into backend and run npm install
-4. in backend add .env file and add the following 2 variables
+4. in backend add .env file and add the following 3 variables
    * PERMISSION_SET_DIR = 'Path to your salesforce permission sets folder in desired org'
    * OBJECT_SET_DIR = 'Path to your salesforce objects folder in desired org'
    * PROFILE_DIR = 'Path to your salesforce profiles folder in desired org'

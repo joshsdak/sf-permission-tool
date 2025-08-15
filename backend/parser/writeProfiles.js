@@ -34,6 +34,16 @@ function getProfiles() {
     })
 }
 
+function getFieldName(fp) {
+  if (typeof fp.field === 'string') {
+    return fp.field.trim();
+  }
+  if (fp.field && typeof fp.field['#text'] === 'string') {
+    return fp.field['#text'].trim();
+  }
+  return undefined;
+}
+
 function writeProfiles(field, object) {
     PROFILES.forEach(profile => {
         const fileName = profile.name;
@@ -58,11 +68,15 @@ function writeProfiles(field, object) {
         const fieldPermissions = json.Profile.fieldPermissions;
         const newFieldPermission = {
             editable: false,
-            field: `${object}.${field}`,
+            field: `${object}.${field}`.replace(".field-meta.xml", "").trim(),
             readable: false,
         };
 
-        const exists = fieldPermissions.some(fp => fp.field === newFieldPermission.field);
+        const exists = fieldPermissions.some(fp => {
+            const existingField = getFieldName(fp);
+            return existingField === newFieldPermission.field;
+        });
+
         if (!exists) {
             fieldPermissions.push(newFieldPermission);
             changed = true;
